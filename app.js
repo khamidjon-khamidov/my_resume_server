@@ -16,7 +16,7 @@ mongoose.connect("mongodb://localhost:27017/resumeDB", {useNewUrlParser: true, u
 
 // ---------------------------------- schemas ----------------------------------
 const isUpdatedSchema = {
-    isUpdate: String
+    isUpdate: Number
 }
 
 const aboutMeSchema = {
@@ -76,11 +76,11 @@ const AboutMeSchema = mongoose.model("AboutMeSchema", aboutMeSchema, "about_me")
 const Honor = mongoose.model("Honor", honorsSchema)
 const Post = mongoose.model("Post", postsSchema);
 const Project = mongoose.model("Project", projectsSchema);
-const skills = mongoose.model("Skill", skillsSchema)
+const Skill = mongoose.model("Skill", skillsSchema)
 // -------------------------------------------------------------------------------------------------------
 
 // --------------------------------------------- REST APIs -------------------------------
-const handleRes = (err, myData) => {
+const handleRes = (err, myData, res) => {
     if(!err){
         res.send(myData)
     } else {
@@ -90,54 +90,43 @@ const handleRes = (err, myData) => {
     }
 }
 
-app.get("/someone/shouldpdate", function(req, res){
-    IsUpdate.find(handleRes)
+app.get("/someone/shouldupdate", function(req, res){
+    IsUpdate.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
 
 app.get("/someone/aboutme", function(req, res){
-    AboutMeSchema.find(handleRes);
+    AboutMeSchema.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
 
 app.get("/someone/honors", function(req, res){
-    Honor.find(handleRes);
+    Honor.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
 
 app.get("/someone/posts", function(req, res){
-    Post.find(handleRes)
+    Post.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
 
 app.get("/someone/projects", function(req, res){
-    Project.find(handleRes);
+    Project.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
 
 app.get("/someone/skills", function(req, res){
-    
+    Skill.find(function(err, myData){
+        handleRes(err, myData, res)
+    });
 })
-
+// ------------------------------------------------------------------------------------------------------
 
 app.listen(9000, function(){
     console.log("Server started listening on port 3000");
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
