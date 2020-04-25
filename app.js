@@ -218,6 +218,11 @@ app.get("/someone/skills", function (req, res) {
 })
 // ------------------------------------------------------------------------------------------------------
 
-app.listen(9000, function () {
-    console.log("Server started listening on port 3000");
+let port = process.env.PORT;
+if(port==null || port==""){
+    port = 9000;
+}
+
+app.listen(port, function () {
+    console.log("Server started listening on port");
 });

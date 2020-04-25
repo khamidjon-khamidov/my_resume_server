@@ -9,6 +9,9 @@
   },
   "author": "Khamidjon Khamidov",
   "license": "ISC",
+  "engines": {
+    "node": "12.16.2"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
