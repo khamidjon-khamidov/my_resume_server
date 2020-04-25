@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/resumeDB", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_DB_LINK, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // ---------------------------------- schemas ----------------------------------
 const isUpdatedSchema = {
@@ -95,22 +95,22 @@ const handleRes = (err, myData, res) => {
 app.get("/someone/shouldupdate/:os", function (req, res) {
     IsUpdate.find(function (err, myData) {
         console.log("Inside should update")
-        var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() || 
-         req.connection.remoteAddress || 
-         req.socket.remoteAddress || 
-         req.connection.socket.remoteAddress
-        let url = process.env.ENTRIES_URL+"platform: " + req.params.os + " \nIP: " + escape(ip);
+        var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress
+        let url = process.env.ENTRIES_URL + "platform: " + req.params.os + " \nIP: " + escape(ip);
 
         console.log("tried to answer");
 
         request = https.get(url, function (response) {
             var responseString = "";
-        
+
             response.on("data", function (data) {
                 responseString += data;
             });
             response.on("end", function () {
-                console.log(responseString); 
+                console.log(responseString);
             });
         });
 
@@ -125,27 +125,27 @@ app.get("/someone/shouldupdate/:os", function (req, res) {
 })
 
 app.get("/someone/sendMessage/:message", function (req, res) {
-    var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() || 
-         req.connection.remoteAddress || 
-         req.socket.remoteAddress || 
-         req.connection.socket.remoteAddress
-    let url = process.env.EMPLOYER_URL+req.params.message + " Address: " + escape(ip);
+    var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress
+    let url = process.env.EMPLOYER_URL + req.params.message + " Address: " + escape(ip);
 
     request = https.get(url, function (response) {
-            let responseString = "";
-        
-            response.on("data", function (data) {
-                responseString += data;
-            });
-            response.on("end", function () {
-                var resObj = JSON.parse(responseString);
-                if(resObj.ok===true){
-                    res.send({ok: true})
-                } else {
-                    res.status(404).send({message: "No Send"})
-                }
-            });
+        let responseString = "";
+
+        response.on("data", function (data) {
+            responseString += data;
         });
+        response.on("end", function () {
+            var resObj = JSON.parse(responseString);
+            if (resObj.ok === true) {
+                res.send({ ok: true })
+            } else {
+                res.status(404).send({ message: "No Send" })
+            }
+        });
+    });
 })
 
 app.get("/someone/aboutme", function (req, res) {
@@ -165,6 +165,45 @@ app.get("/someone/posts", function (req, res) {
         handleRes(err, myData, res)
     });
 })
+
+app.post("/someone/posts", function (req, res) {
+
+    if (process.env.AUTH_CODE === req.headers['authenticate']) {
+        var newPost = new Post({
+            postId: req.body.postId,
+            postDescription: req.body.postDescription,
+            postLink: req.body.postLink
+        });
+
+        newPost.save(function (err) {
+            if (!err) {
+                res.send({ message: "Success" });
+            } else {
+                res.send({ message: "Error" });
+            }
+        });
+
+    } else {
+        res.send({ message: "You are not Khamidjon. Sorry!" })
+    }
+});
+
+app.delete("/someone/posts", function (req, res) {
+
+    if (process.env.AUTH_CODE === req.headers['authenticate']) {
+        Post.deleteOne(
+            { postId: req.params.postId },
+            function (err) {
+                if (!err)
+                    res.send({ message: "Success" })
+                else 
+                    res.send({message: "Error"})
+            }
+        )
+    } else {
+        res.send({ message: "You are not Khamidjon. Sorry!" })
+    }
+});
 
 app.get("/someone/projects", function (req, res) {
     Project.find(function (err, myData) {
