@@ -33,7 +33,8 @@ const aboutMeSchema = {
             link: String
         }
     ],
-    pictureLink: String
+    pictureLink: String,
+    description: String
 }
 
 const honorsSchema = {
