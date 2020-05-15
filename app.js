@@ -34,7 +34,8 @@ const aboutMeSchema = {
         }
     ],
     pictureLink: String,
-    description: String
+    description: String,
+    cvLink: String
 }
 
 const honorsSchema = {
