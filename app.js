@@ -49,7 +49,7 @@ const service_account = {
     let token = req.params.token
     let message = req.params.message
 
-    payload.mtoken.token
+    payload.data.mtoken = token
     payload.data.khamidjon = message
 
     admin.messaging().sendToDevice(token, payload, options)
