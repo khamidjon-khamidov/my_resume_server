@@ -4,6 +4,56 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const https = require("https");
+const admin = require("firebase-admin")
+
+// ******************* Initialize firebase **********************
+const service_account = {
+    "type": "service_account",
+    "project_id": "cvforkhamidjon",
+    "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY,
+    "client_email": process.env.FIREBASE_CLIENT_EMAIL, 
+    "client_id": process.env.FIREBASE_CLIENT_ID,
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
+  }
+
+  admin.initializeApp({
+      credential: admin.credential.cert(service_account),
+      databaseURL: "https://cvforkhamidjon.firebaseio.com"
+  })
+
+  var payload = {
+      data: {
+          khamidjon: "",
+          mtoken: ""
+      }
+  }
+
+  var options = {
+      priority: "high",
+      timeToLive: 60*60*24*15
+  }
+
+  app.get("/sendMessage/:token/:message", function (req, res) {
+    let token = req.params.token
+    let message = req.params.message
+
+    payload.mtoken.token
+    payload.data.khamidjon = message
+
+    admin.messaging().sendToDevice(token, payload, options)
+    .then(function(response){
+        res.send({ok: true})
+    })
+    .catch(function(error){
+        res.status(404).send({message: "No Send"})
+    })
+})
+
+// ********************************************************************
 
 const app = express();
 
@@ -132,7 +182,7 @@ app.get("/someone/sendMessage/:message", function (req, res) {
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress
     let url = process.env.EMPLOYER_URL + req.params.message + " Address: " + escape(ip);
-
+    
     request = https.get(url, function (response) {
         let responseString = "";
 
