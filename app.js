@@ -6,12 +6,20 @@ const cors = require("cors");
 const https = require("https");
 const admin = require("firebase-admin")
 
+const app = express();
+
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cors());
+app.use(express.static("public"));
+
 // ******************* Initialize firebase **********************
 const service_account = {
     "type": "service_account",
     "project_id": "cvforkhamidjon",
     "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
-    "private_key": process.env.FIREBASE_PRIVATE_KEY,
+    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     "client_email": process.env.FIREBASE_CLIENT_EMAIL, 
     "client_id": process.env.FIREBASE_CLIENT_ID,
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -54,15 +62,6 @@ const service_account = {
 })
 
 // ********************************************************************
-
-const app = express();
-
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cors());
-app.use(express.static("public"));
-
 mongoose.connect(process.env.MONGO_DB_LINK, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // ---------------------------------- schemas ----------------------------------
