@@ -49,11 +49,12 @@ const service_account = {
     let token = req.params.token
     let message = req.params.message
 
-    payload.data.mtoken = token
-    payload.data.khamidjon = message
+    payload.data.mtoken = decodeURIComponent(token)
+    payload.data.khamidjon = decodeURIComponent(message)
 
     admin.messaging().sendToDevice(token, payload, options)
     .then(function(response){
+        console.log("Khamidjon: ", response)
         res.send({ok: true})
     })
     .catch(function(error){
